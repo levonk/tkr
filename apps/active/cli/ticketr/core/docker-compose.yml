@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  cli:
+    build: .
+    image: :latest
+    volumes:
+      - .:/usr/src/app
+    # Keep container running if needed, or just run one-off
+    # command: ["--help"]

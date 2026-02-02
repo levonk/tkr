@@ -16,3 +16,4 @@ Thumbs.db
 # Logs
 *.log
 logs/
+.devbox/gen/scripts/.hooks.sh

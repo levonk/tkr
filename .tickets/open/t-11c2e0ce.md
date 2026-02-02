@@ -1,6 +1,6 @@
 ---
 id: t-11c2e0ce
-title: Test ticket
+title: Create test cases for every command
 status: open
 deps: []
 links: []

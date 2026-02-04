@@ -1,7 +1,7 @@
 ---
 id: t-aa54bf7
 title: Add version command to display build info
-status: open
+status: in_progress
 deps: []
 links: []
 created: 2026-02-04T02:30:32.725982721Z
@@ -26,8 +26,6 @@ notes:
     Using: /home/micro/.local/bin/tkr (the release binary we just built)
 
     This is a standard CLI feature that most tools provide for user convenience and debugging.
-- timestamp: 2026-02-04T03:31:45.522946230Z
-  content: 'Implemented version command that displays version number and description. Added test to verify functionality. Tests pass: 3 passed, 0 failed.'
 ---
 
 # Add version command to display build info
@@ -51,4 +49,3 @@ Current behavior:
 Using: /home/micro/.local/bin/tkr (the release binary we just built)
 
 This is a standard CLI feature that most tools provide for user convenience and debugging.
-**2026-02-04 03:31:45**: Implemented version command that displays version number and description. Added test to verify functionality. Tests pass: 3 passed, 0 failed.

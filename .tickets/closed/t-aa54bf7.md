@@ -1,7 +1,7 @@
 ---
 id: t-aa54bf7
 title: Add version command to display build info
-status: open
+status: closed
 deps: []
 links: []
 created: 2026-02-04T02:30:32.725982721Z

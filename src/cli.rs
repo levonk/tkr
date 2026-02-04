@@ -76,6 +76,17 @@ pub enum Commands {
         #[arg(long = "category")]
         category: Option<String>,
     },
+    /// Alias for 'list' command
+    Ls {
+        #[arg(long = "status")]
+        status: Option<String>,
+        #[arg(long = "type")]
+        issue_type: Option<String>,
+        #[arg(long = "project")]
+        project: Option<String>,
+        #[arg(long = "category")]
+        category: Option<String>,
+    },
     /// List ready tickets (no open dependencies)
     Ready,
     /// List blocked tickets
@@ -167,6 +178,21 @@ impl Commands {
                 eprintln!("Unlink command not yet implemented");
             },
             Commands::List {
+                status: _,
+                issue_type: _,
+                project: _,
+                category: _
+            } => {
+                let tickets = manager.list_tickets()?;
+                if tickets.is_empty() {
+                    println!("No tickets found");
+                } else {
+                    for ticket in tickets {
+                        println!("{} - {} ({})", ticket.id, ticket.title, ticket.status);
+                    }
+                }
+            },
+            Commands::Ls {
                 status: _,
                 issue_type: _,
                 project: _,

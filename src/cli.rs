@@ -113,6 +113,8 @@ pub enum Commands {
         #[arg(long, default_value = "auto")]
         from: String,
     },
+    /// Display version and build information
+    Version,
     /// Start web server with kanban board
     Web {
         #[arg(long = "host", default_value = "127.0.0.1")]
@@ -246,6 +248,10 @@ impl Commands {
             },
             Commands::Migrate { from } => {
                 manager.migrate_tickets(&from)?;
+            },
+            Commands::Version => {
+                println!("tkr {}", env!("CARGO_PKG_VERSION"));
+                println!("A ticket management system with dependency tracking and mono-repo support");
             },
             Commands::Web { host, port } => {
                 crate::web::start_web_server(manager, host, port).await?;

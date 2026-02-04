@@ -101,10 +101,10 @@ pub async fn run_tui(manager: &mut TicketManager) -> Result<()> {
     tokio::spawn(async move {
         let mut manager = manager_clone;
         let mut last_update = std::time::Instant::now();
-        
+
         loop {
             tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-            
+
             if let Ok(tickets) = manager.list_tickets() {
                 let _ = tx_clone.send(AppEvent::Refresh);
             }
@@ -222,7 +222,7 @@ fn ui(f: &mut Frame, app: &App) {
         .split(f.size());
 
     // Header
-    let header = Paragraph::new("Ticketr - TUI Mode")
+    let header = Paragraph::new("tkr - TUI Mode")
         .style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD))
         .block(Block::default().borders(Borders::ALL));
     f.render_widget(header, chunks[0]);

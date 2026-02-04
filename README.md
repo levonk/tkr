@@ -1,10 +1,10 @@
-# ticketr - Rust CLI Ticket Management System
+# tkr - Rust CLI Ticket Management System
 
 A modern Rust implementation of a ticket management system with dependency tracking and mono-repo support, ported from the original `tk` bash script.
 
 ## Purpose
 
-`ticketr` is a command-line tool for managing tickets stored as markdown files with YAML frontmatter. It's designed for developers who want a lightweight, git-friendly ticket system that integrates seamlessly with their workflow.
+`tkr` is a command-line tool for managing tickets stored as markdown files with YAML frontmatter. It's designed for developers who want a lightweight, git-friendly ticket system that integrates seamlessly with their workflow.
 
 ### Key Features
 

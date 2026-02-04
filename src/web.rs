@@ -90,7 +90,7 @@ fn load_config() -> Option<WebConfig> {
         .ok()
         .or_else(|| std::env::var("HOME").ok().map(|h| format!("{}/.config", h)))?;
 
-    let config_path = PathBuf::from(config_dir).join("ticketr").join("config.yml");
+    let config_path = PathBuf::from(config_dir).join("tkr").join("config.yml");
 
     if config_path.exists() {
         let content = std::fs::read_to_string(config_path).ok()?;
@@ -101,11 +101,11 @@ fn load_config() -> Option<WebConfig> {
 }
 
 fn load_git_root_config() -> Option<WebConfig> {
-    // Try to find git root and check for .config/ticketr/config.yml
+    // Try to find git root and check for .config/tkr/config.yml
     let mut current = std::env::current_dir().ok()?;
 
     loop {
-        let config_path = current.join(".config").join("ticketr").join("config.yml");
+        let config_path = current.join(".config").join("tkr").join("config.yml");
 
         if config_path.exists() {
             let content = std::fs::read_to_string(config_path).ok()?;

@@ -1615,7 +1615,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ticketr"
+name = "tkr"
 version = "0.1.0"
 dependencies = [
  "anyhow",

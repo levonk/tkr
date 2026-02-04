@@ -1,5 +1,5 @@
 [package]
-name = "ticketr"
+name = "tkr"
 version = "0.1.0"
 edition = "2021"
 description = "A ticket management system with dependency tracking and mono-repo support"

@@ -1,10 +1,10 @@
-# Agent Documentation: ticketr CLI Tool
+# Agent Documentation: tkr CLI Tool
 
 ## Overview
 
-**ticketr** is a modern Rust CLI ticket management system designed for developers who want a lightweight, git-friendly ticket system that integrates seamlessly with their workflow. It's a complete rewrite of the original `tk` bash script in Rust, providing type safety, better performance, and enhanced features.
+**tkr** is a modern Rust CLI ticket management system designed for developers who want a lightweight, git-friendly ticket system that integrates seamlessly with their workflow. It's a complete rewrite of the original `tk` bash script in Rust, providing type safety, better performance, and enhanced features.
 
-### What ticketr Does
+### What tkr Does
 
 - **Manages tickets as markdown files** with YAML frontmatter for human-readable storage
 - **Tracks dependencies** between tickets to manage complex workflows
@@ -28,7 +28,7 @@
 ## Quick Reference
 
 - **Project Type**: Rust CLI application using clap for argument parsing
-- **Build System**: Cargo with mise for environment management
+- **Build System**: Cargo with devbox for environment management
 - **Test Framework**: Built-in Rust testing with assert_cmd for CLI tests
 - **Architecture**: Modular design with clear separation of concerns
 - **File Format**: Markdown files with YAML frontmatter for ticket storage
@@ -37,7 +37,7 @@
 ## Repository Structure
 
 ```
-apps/active/cli/ticketr/
+apps/active/cli/tkr/
 ├── Cargo.toml              # Dependencies and project metadata
 ├── src/
 │   ├── main.rs             # Entry point and application initialization
@@ -147,7 +147,7 @@ Ticket description goes here.
 
 ### AI Agent Workflow Loop
 
-This section describes the systematic workflow for AI agents working with ticketr to ensure consistent, high-quality development cycles.
+This section describes the systematic workflow for AI agents working with tkr to ensure consistent, high-quality development cycles.
 
 #### The AI Development Loop
 
@@ -564,7 +564,7 @@ CMD ["tkr"]
 ```yaml
 version: '3.8'
 services:
-  ticketr:
+  tkr:
     build: .
     ports:
       - "8080:8080"

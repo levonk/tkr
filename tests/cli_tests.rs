@@ -1,8 +1,8 @@
 use assert_cmd::Command;
+use predicates::prelude::*;
 use tempfile::TempDir;
 use std::fs;
 use std::path::PathBuf;
-use std::str;
 
 // Helper function to find all ticket files recursively
 fn find_ticket_files(tickets_dir: &PathBuf) -> Vec<PathBuf> {
@@ -34,11 +34,11 @@ fn find_ticket_files(tickets_dir: &PathBuf) -> Vec<PathBuf> {
 
 #[test]
 fn test_help() {
-    let mut cmd = Command::cargo_bin("tkr");
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
     cmd.arg("--help")
         .assert()
         .success()
-        .stdout(str::contains("Updated"));
+        .stdout(predicate::str::contains("Usage:"));
 }
 
 #[test]
@@ -54,7 +54,7 @@ fn test_create_ticket() {
         .arg("Test description")
         .assert()
         .success()
-        .stdout(str::contains("-"));
+        .stdout(predicate::str::contains("-"));
 
     // Check that ticket file was created
     assert!(tickets_dir.exists());
@@ -127,7 +127,7 @@ Test description
         .arg("list")
         .assert()
         .success()
-        .stdout(str::contains("test-123"));
+        .stdout(predicate::str::contains("test-123"));
 }
 
 #[test]
@@ -161,7 +161,7 @@ fn test_ticket_status_update() {
         .arg("in_progress")
         .assert()
         .success()
-        .stdout(str::contains("Updated"));
+        .stdout(predicate::str::contains("Updated"));
 
     // Verify status changed to in_progress
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -199,7 +199,7 @@ fn test_add_note() {
         .arg("Test note content")
         .assert()
         .success()
-        .stdout(str::contains("Note added"));
+        .stdout(predicate::str::contains("Note added"));
 
     // Check note is in file
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -264,7 +264,7 @@ fn test_dependency_management() {
         .arg(parent_id)
         .assert()
         .success()
-        .stdout(str::contains("Added dependency"));
+        .stdout(predicate::str::contains("Added dependency"));
 
     // Remove dependency
     let mut cmd = Command::cargo_bin("tkr").unwrap();
@@ -274,7 +274,7 @@ fn test_dependency_management() {
         .arg(parent_id)
         .assert()
         .success()
-        .stdout(str::contains("Removed dependency"));
+        .stdout(predicate::str::contains("Removed dependency"));
 }
 
 #[test]
@@ -307,7 +307,7 @@ fn test_start_command() {
         .arg(ticket_id)
         .assert()
         .success()
-        .stdout(str::contains("Started"));
+        .stdout(predicate::str::contains("Started"));
 
     // Verify status changed to in_progress
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -344,7 +344,7 @@ fn test_close_command() {
         .arg(ticket_id)
         .assert()
         .success()
-        .stdout(str::contains("Closed"));
+        .stdout(predicate::str::contains("Closed"));
 
     // Verify status changed to closed
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -389,7 +389,7 @@ fn test_reopen_command() {
         .arg(ticket_id)
         .assert()
         .success()
-        .stdout(str::contains("Reopened"));
+        .stdout(predicate::str::contains("Reopened"));
 
     // Verify status changed to open
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -427,7 +427,7 @@ fn test_status_command() {
         .arg("blocked")
         .assert()
         .success()
-        .stdout(str::contains("Updated"));
+        .stdout(predicate::str::contains("Updated"));
 
     // Verify status changed to blocked
     let content = fs::read_to_string(ticket_path).unwrap();
@@ -466,9 +466,9 @@ fn test_show_command() {
         .arg(ticket_id)
         .assert()
         .success()
-        .stdout(str::contains("Show test ticket"))
-        .stdout(str::contains("Test description for show"))
-        .stdout(str::contains(ticket_id));
+        .stdout(predicate::str::contains("Show test ticket"))
+        .stdout(predicate::str::contains("Test description for show"))
+        .stdout(predicate::str::contains(ticket_id));
 }
 
 #[test]
@@ -534,7 +534,7 @@ fn test_dep_tree_command() {
         .arg("dep-tree")
         .assert()
         .success()
-        .stdout(str::contains("Dependency tree"));
+        .stdout(predicate::str::contains("Dependency tree"));
 }
 
 #[test]
@@ -593,7 +593,7 @@ fn test_link_unlink_commands() {
         .arg(second_id)
         .assert()
         .success()
-        .stdout(str::contains("Linked"));
+        .stdout(predicate::str::contains("Linked"));
 
     // Unlink tickets
     let mut cmd = Command::cargo_bin("tkr").unwrap();
@@ -603,7 +603,7 @@ fn test_link_unlink_commands() {
         .arg(second_id)
         .assert()
         .success()
-        .stdout(str::contains("Unlinked"));
+        .stdout(predicate::str::contains("Unlinked"));
 }
 
 #[test]
@@ -659,4 +659,5 @@ fn test_ready_command() {
         .arg("ready")
         .assert()
         .success()
-        }
+        .stdout(predicate::str::contains(ready_id));
+}

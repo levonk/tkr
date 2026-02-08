@@ -5,6 +5,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#cargo",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/wf6279pgydd1nny4s5nx1msian6dbf9p-cargo-1.92.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -19,6 +27,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#clippy",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/34yqzpcjb1cms86lij7wkszcjxdivx6f-clippy-1.92.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -33,6 +49,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#devbox",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/dlc4cafkn1rcsmshgwzxl9m3x9wxpk7p-devbox-0.16.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -47,6 +71,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#direnv",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/qr7mlb0hvnwl266mvx8py0snyy0k6q9v-direnv-2.37.1",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -61,6 +93,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#git",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/sr42bfqa0pc2ysba678mrm49g78jdynp-git-2.52.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -72,8 +112,31 @@
       }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2026-02-01T05:13:08Z",
-      "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?lastModified=1769922788&narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D"
+      "last_modified": "2026-02-08T07:51:33Z",
+      "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?lastModified=1770537093&narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D"
+    },
+    "just": {
+      "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#just",
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/dj01bb0rk1czx6wdymfswh4as56xsbkw-just-1.46.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/svaa8vdlzdgbm5plfk3bvyawnvkj7x36-just-1.46.0-man",
+              "default": true
+            }
+          ]
+        }
+      }
+    },
+    "rust-analyzer": {
+      "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#rust-analyzer",
+      "source": "nixpkg"
     },
     "just": {
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#just",
@@ -84,6 +147,19 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#rustc",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/zkcwgmgli06nsh0v8yv82gnh5whgcdyl-rustc-wrapper-1.92.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/2k3fdy9xjwkx06rlfwfn449w442vgk0i-rustc-wrapper-1.92.0-man",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -103,6 +179,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#rustfmt",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/dnjwscz1r33dkmikx3ms58qmhr60db9i-rustfmt-1.92.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -117,6 +201,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#sd",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/4iqsyp0dcjcjx96rr1v64vwwck05aylv-sd-1.0.0",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {
@@ -131,6 +223,14 @@
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#yq-go",
       "source": "nixpkg",
       "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/z3r8ynh5vwm66vf7i2czc164rwvch7cz-yq-go-4.50.1",
+              "default": true
+            }
+          ]
+        },
         "x86_64-linux": {
           "outputs": [
             {

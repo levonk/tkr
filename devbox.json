@@ -1,11 +1,15 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
   "packages": [
+    "act",
+    "ast-grep",
     "cargo",
     "clippy",
     "devbox",
     "direnv",
     "git",
+    "gh",
+    "glab",
     "just",
     "rust-analyzer",
     "rustc",
@@ -15,11 +19,20 @@
   ],
   "shell": {
     "init_hook": [
-      "echo '🦀 Welcome to the tkr Rust CLI development shell!'",
-      "echo '🛠️  Use: cargo run -- <command> [args]'",
-      "echo '📦 Build: cargo build'",
-      "echo '🧪 Test: cargo test'",
-      "echo '🔍 Lint: cargo clippy'"
+      "just bootstrap-internal"
     ]
+  },
+  "scripts": {
+    "bootstrap": "just bootstrap-internal",
+    "doctor": "just doctor-internal",
+    "clean": "just clean-internal",
+    "build": "just build-internal",
+    "lint": "just lint-internal",
+    "test": "just test-internal",
+    "typecheck": "just typecheck-internal",
+    "dev": "just dev-internal",
+    "debug": "just debug-internal",
+    "install": "just install-internal",
+    "release": "just release-internal"
   }
 }

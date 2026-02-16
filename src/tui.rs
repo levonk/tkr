@@ -16,6 +16,7 @@ use tokio::sync::mpsc;
 use crate::ticket::{Ticket, TicketManager};
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub enum AppEvent {
     Refresh,
     Quit,
@@ -25,6 +26,7 @@ pub enum AppEvent {
 }
 
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub enum AppState {
     Normal,
     Help,
@@ -32,10 +34,12 @@ pub enum AppState {
     EditingTicket(usize),
 }
 
+#[allow(dead_code)]
 pub struct App {
     pub tickets: Vec<Ticket>,
     pub selected_ticket: usize,
     pub state: AppState,
+    #[allow(dead_code)]
     pub status_filter: Option<String>,
     list_state: ListState,
 }
@@ -99,13 +103,12 @@ pub async fn run_tui(manager: &mut TicketManager) -> Result<()> {
 
     // Spawn background task for ticket updates
     tokio::spawn(async move {
-        let mut manager = manager_clone;
-        let mut last_update = std::time::Instant::now();
+        let _last_update = std::time::Instant::now();
 
         loop {
             tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
-            if let Ok(tickets) = manager.list_tickets() {
+            if let Ok(_tickets) = manager_clone.list_tickets() {
                 let _ = tx_clone.send(AppEvent::Refresh);
             }
         }
@@ -157,7 +160,7 @@ pub async fn run_tui(manager: &mut TicketManager) -> Result<()> {
                             }
                         }
                         KeyCode::Enter => {
-                            if let Some(ticket) = app.tickets.get(app.selected_ticket) {
+                            if let Some(_ticket) = app.tickets.get(app.selected_ticket) {
                                 app.state = AppState::EditingTicket(app.selected_ticket);
                             }
                         }

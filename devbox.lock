@@ -3,11 +3,31 @@
   "packages": {
     "act": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#act",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/j49qnbhrsi7qhw4jn9852f818nxmmj9r-act-0.2.84",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "ast-grep": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#ast-grep",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/l8w24sp95pdaa16xgkimzm7ic5i1m7k9-ast-grep-0.40.5",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "cargo": {
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#cargo",
@@ -99,7 +119,17 @@
     },
     "gh": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#gh",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/vhpac8ld4xkaa13bsrbwnyrmlcxsg57q-gh-2.86.0",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "git": {
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#git",
@@ -129,15 +159,51 @@
     },
     "glab": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#glab",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/sljykfv0x59zng65i9ml5vg6v6dlzpnz-glab-1.82.0",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "just": {
       "resolved": "github:NixOS/nixpkgs/207d15f1a6603226e1e223dc79ac29c7846da32e?narHash=sha256-H3AfG4ObMDTkTJYkd8cz1%2FRbY9LatN5Mk4UF48VuSXc%3D#just",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "path": "/nix/store/dj01bb0rk1czx6wdymfswh4as56xsbkw-just-1.46.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/svaa8vdlzdgbm5plfk3bvyawnvkj7x36-just-1.46.0-man",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "rust-analyzer": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#rust-analyzer",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "02-02",
+              "path": "/nix/store/n0w0np1hw3xicrb1j9bgz48k8vlg18w1-rust-analyzer-2026-02-02",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "rustc": {
       "plugin_version": "0.0.1",
@@ -147,12 +213,12 @@
         "x86_64-darwin": {
           "outputs": [
             {
-              "path": "/nix/store/zkcwgmgli06nsh0v8yv82gnh5whgcdyl-rustc-wrapper-1.92.0",
+              "name": "man",
+              "path": "/nix/store/2k3fdy9xjwkx06rlfwfn449w442vgk0i-rustc-wrapper-1.92.0-man",
               "default": true
             },
             {
-              "name": "man",
-              "path": "/nix/store/2k3fdy9xjwkx06rlfwfn449w442vgk0i-rustc-wrapper-1.92.0-man",
+              "path": "/nix/store/zkcwgmgli06nsh0v8yv82gnh5whgcdyl-rustc-wrapper-1.92.0",
               "default": true
             }
           ]

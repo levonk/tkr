@@ -72,6 +72,7 @@ impl TicketManager {
         self.tickets_dir.join(status)
     }
 
+    #[allow(dead_code)]
     fn ticket_path_by_status(&self, id: &str, status: &str) -> Result<PathBuf> {
         let status_dir = self.get_status_dir(status);
         let exact_path = status_dir.join(format!("{}.md", id));
@@ -96,6 +97,7 @@ impl TicketManager {
         self.ticket_path(id)
     }
 
+    #[allow(dead_code)]
     pub fn ensure_tickets_dir(&self) -> Result<()> {
         if !self.tickets_dir.exists() {
             fs::create_dir_all(&self.tickets_dir)?;
@@ -229,6 +231,7 @@ impl TicketManager {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn move_ticket_to_status(&self, ticket_id: &str, new_status: &str) -> Result<()> {
         let mut ticket = self.load_ticket(ticket_id)?;
         let old_status = ticket.status.clone();
@@ -255,6 +258,7 @@ impl TicketManager {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn handle_ticket_closure(&self, closing_ticket: &Ticket) -> Result<()> {
         // Find tickets that depend on this closing ticket
         let all_tickets = self.list_tickets()?;
@@ -322,6 +326,7 @@ impl TicketManager {
         Ok(tickets)
     }
 
+    #[allow(dead_code)]
     pub fn search_tickets(&self, query: &str) -> Result<Vec<Ticket>> {
         let all_tickets = self.list_tickets()?;
         let query_lower = query.to_lowercase();

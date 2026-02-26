@@ -287,6 +287,9 @@ impl TicketManager {
     }
 
     pub fn list_tickets(&self) -> Result<Vec<Ticket>> {
+        // First, check for and fix any misplaced tickets
+        self.fix_misplaced_tickets()?;
+
         self.ensure_status_directories()?;
 
         let mut tickets = Vec::new();
@@ -324,6 +327,119 @@ impl TicketManager {
         tickets.sort_by(|a, b| b.created.cmp(&a.created));
 
         Ok(tickets)
+    }
+
+    /// Detect and fix misplaced tickets in the root .tickets directory
+    pub fn fix_misplaced_tickets(&self) -> Result<()> {
+        if !self.tickets_dir.exists() {
+            return Ok(());
+        }
+
+        self.ensure_status_directories()?;
+
+        let mut fixed_count = 0;
+
+        // Scan for .md files directly in .tickets directory (not in status subdirectories)
+        if let Ok(entries) = fs::read_dir(&self.tickets_dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                
+                // Skip if it's a status directory
+                if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
+                    let statuses = ["open", "in_progress", "closed", "blocked", "ready", "icebox", "archive"];
+                    if statuses.contains(&name) {
+                        continue;
+                    }
+                }
+
+                // Process .md files in root tickets directory
+                if path.is_file() && path.extension().map(|ext| ext == "md").unwrap_or(false) {
+                    match self.fix_misplaced_ticket(&path) {
+                        Ok(_) => fixed_count += 1,
+                        Err(e) => {
+                            eprintln!("Warning: Failed to fix misplaced ticket {}: {}", 
+                                path.display(), e);
+                        }
+                    }
+                }
+            }
+        }
+
+        if fixed_count > 0 {
+            println!("Fixed {} misplaced ticket(s)", fixed_count);
+        }
+
+        Ok(())
+    }
+
+    /// Fix a single misplaced ticket by moving it to the appropriate status directory
+    fn fix_misplaced_ticket(&self, path: &PathBuf) -> Result<()> {
+        let content = fs::read_to_string(path)?;
+        
+        // Try to parse the ticket to determine its status
+        let ticket = match self.parse_ticket_content(&content) {
+            Ok(ticket) => ticket,
+            Err(_e) => {
+                // If parsing fails, try to extract status from filename or default to 'open'
+                let filename = path.file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or("unknown");
+                
+                let ticket_id = filename.trim_end_matches(".md");
+                
+                // Create a minimal ticket structure
+                Ticket {
+                    id: ticket_id.to_string(),
+                    title: format!("Migrated: {}", ticket_id),
+                    status: "open".to_string(), // Default to open
+                    deps: Vec::new(),
+                    links: Vec::new(),
+                    created: Utc::now(),
+                    issue_type: "task".to_string(),
+                    priority: 2,
+                    description: Some(format!("Migrated from misplaced file: {}", filename)),
+                    design: None,
+                    acceptance: None,
+                    assignee: None,
+                    external_ref: None,
+                    parent: None,
+                    project: self.project.clone(),
+                    category: self.category.clone(),
+                    notes: None,
+                }
+            }
+        };
+
+        // Move ticket to appropriate status directory
+        let target_dir = self.get_status_dir(&ticket.status);
+        let target_path = target_dir.join(format!("{}.md", ticket.id));
+
+        // Create target directory if it doesn't exist
+        fs::create_dir_all(&target_dir)?;
+
+        // Move the file
+        fs::rename(&path, &target_path)?;
+
+        println!("Moved ticket {} to {}/{}", 
+            ticket.id, ticket.status, ticket.id);
+
+        Ok(())
+    }
+
+    /// Parse ticket content, handling both proper YAML frontmatter and simple formats
+    fn parse_ticket_content(&self, content: &str) -> Result<Ticket> {
+        // Split YAML frontmatter and content - be more robust with malformed separators
+        let parts: Vec<&str> = content.splitn(3, "---").collect();
+        
+        if parts.len() >= 3 && parts[1].trim().contains("id:") {
+            // Proper YAML frontmatter format
+            let yaml_content = parts[1].trim();
+            serde_yaml::from_str(yaml_content)
+                .map_err(|e| anyhow::anyhow!("Failed to parse YAML: {}", e))
+        } else {
+            // Simple format or malformed - try to extract basic info
+            anyhow::bail!("Cannot parse ticket content - not in expected format")
+        }
     }
 
     #[allow(dead_code)]

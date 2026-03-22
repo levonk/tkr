@@ -1,6 +1,22 @@
 # tkr - Rust CLI Ticket Management System
 
+[![Nix Flake](https://img.shields.io/badge/Nix-flake-blue.svg)](https://github.com/levonk/tkr)
+[![Devbox](https://img.shields.io/badge/Devbox-ready-green.svg)](https://github.com/levonk/tkr)
+
 A modern Rust implementation of a ticket management system with dependency tracking and mono-repo support, ported from the original `tk` bash script.
+
+## Quick Install
+
+```bash
+# Nix (recommended)
+nix profile install github:levonk/tkr
+
+# Devbox
+devbox add github:levonk/tkr
+
+# Run immediately
+nix run github:levonk/tkr -- --help
+```
 
 ## Purpose
 
@@ -106,7 +122,22 @@ mise exec -- cargo test -- --nocapture
 
 ### Installation
 
-#### Option 1: Devbox Installation (Recommended)
+#### Option 1: Nix Installation (Recommended)
+
+Install tkr directly from the GitHub repository using Nix flakes:
+
+```bash
+# Install from the flake registry
+nix profile install github:levonk/tkr
+
+# Or build and run directly
+nix run github:levonk/tkr -- --help
+
+# For development environments
+nix develop github:levonk/tkr
+```
+
+#### Option 2: Devbox Installation
 
 Install tkr directly from the GitHub repository using devbox:
 
@@ -124,7 +155,7 @@ devbox shell
 tkr --help
 ```
 
-#### Option 2: Cargo Installation
+#### Option 3: Cargo Installation
 
 ```bash
 # Install to local bin
@@ -133,7 +164,7 @@ cargo install --path .
 # The binary will be named `tkr`
 ```
 
-#### Option 3: Build from Source
+#### Option 4: Build from Source
 
 ```bash
 # Clone the repository

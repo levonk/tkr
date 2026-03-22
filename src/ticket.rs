@@ -718,10 +718,51 @@ impl TicketManager {
 
     pub fn update_status(&self, id: &str, status: &str) -> Result<()> {
         let mut ticket = self.load_ticket(id)?;
+        let old_status = ticket.status.clone();
+        
         self.validate_status(status)?;
+        
+        if old_status == status {
+            println!("Ticket {} already has status {}", id, status);
+            return Ok(());
+        }
+
+        // Handle special closing logic
+        if status == "closed" {
+            self.handle_ticket_closure(&ticket)?;
+        }
+
+        // Update status and save to new location
         ticket.status = status.to_string();
         self.save_ticket(&ticket)?;
+
+        // Remove from old location if it exists
+        let old_path = self.ticket_path_by_status(id, &old_status)?;
+        let new_path = self.get_status_dir(status).join(format!("{}.md", id));
+        
+        if old_path.exists() && old_path != new_path {
+            fs::remove_file(old_path)?;
+        }
+
         println!("Updated {} -> {}", id, status);
+        Ok(())
+    }
+
+    pub fn start_ticket(&self, id: &str) -> Result<()> {
+        self.update_status(id, "in_progress")?;
+        println!("Started");
+        Ok(())
+    }
+
+    pub fn close_ticket(&self, id: &str) -> Result<()> {
+        self.update_status(id, "closed")?;
+        println!("Closed");
+        Ok(())
+    }
+
+    pub fn reopen_ticket(&self, id: &str) -> Result<()> {
+        self.update_status(id, "open")?;
+        println!("Reopened");
         Ok(())
     }
 

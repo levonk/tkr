@@ -164,7 +164,9 @@ fn test_ticket_status_update() {
         .stdout(predicate::str::contains("Updated"));
 
     // Verify status changed to in_progress
-    let content = fs::read_to_string(ticket_path).unwrap();
+    // The file should now be in the in_progress directory
+    let in_progress_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    let content = fs::read_to_string(in_progress_path).unwrap();
     assert!(content.contains("status: in_progress"));
 }
 
@@ -310,7 +312,9 @@ fn test_start_command() {
         .stdout(predicate::str::contains("Started"));
 
     // Verify status changed to in_progress
-    let content = fs::read_to_string(ticket_path).unwrap();
+    // The file should now be in the in_progress directory
+    let in_progress_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    let content = fs::read_to_string(in_progress_path).unwrap();
     assert!(content.contains("status: in_progress"));
 }
 
@@ -347,7 +351,9 @@ fn test_close_command() {
         .stdout(predicate::str::contains("Closed"));
 
     // Verify status changed to closed
-    let content = fs::read_to_string(ticket_path).unwrap();
+    // The file should now be in the closed directory
+    let closed_path = tickets_dir.join("closed").join(format!("{}.md", ticket_id));
+    let content = fs::read_to_string(closed_path).unwrap();
     assert!(content.contains("status: closed"));
 }
 
@@ -430,7 +436,9 @@ fn test_status_command() {
         .stdout(predicate::str::contains("Updated"));
 
     // Verify status changed to blocked
-    let content = fs::read_to_string(ticket_path).unwrap();
+    // The file should now be in the blocked directory
+    let blocked_path = tickets_dir.join("blocked").join(format!("{}.md", ticket_id));
+    let content = fs::read_to_string(blocked_path).unwrap();
     assert!(content.contains("status: blocked"));
 }
 
@@ -660,4 +668,161 @@ fn test_ready_command() {
         .assert()
         .success()
         .stdout(predicate::str::contains(ready_id));
+}
+
+#[test]
+fn test_ticket_file_movement_between_status_directories() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Create a ticket
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Test ticket for file movement")
+        .assert()
+        .success();
+
+    // Get the ticket ID and verify it starts in open directory
+    let ticket_files = find_ticket_files(&tickets_dir);
+    assert_eq!(ticket_files.len(), 1);
+    
+    let ticket_path = ticket_files[0].as_path();
+    let ticket_id = ticket_path
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Verify initial location is open directory
+    assert!(ticket_path.starts_with(&tickets_dir.join("open")));
+    assert!(ticket_path.exists());
+
+    // Start the ticket - should move to in_progress directory
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("start")
+        .arg(ticket_id)
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Started"));
+
+    // Verify file moved to in_progress directory and no longer in open
+    let in_progress_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    let old_open_path = tickets_dir.join("open").join(format!("{}.md", ticket_id));
+    
+    assert!(in_progress_path.exists());
+    assert!(!old_open_path.exists());
+    
+    // Verify content is correct in new location
+    let content = fs::read_to_string(&in_progress_path).unwrap();
+    assert!(content.contains("status: in_progress"));
+
+    // Close the ticket - should move to closed directory
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("close")
+        .arg(ticket_id)
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Closed"));
+
+    // Verify file moved to closed directory and no longer in in_progress
+    let closed_path = tickets_dir.join("closed").join(format!("{}.md", ticket_id));
+    
+    assert!(closed_path.exists());
+    assert!(!in_progress_path.exists());
+    assert!(!old_open_path.exists());
+    
+    // Verify content is correct in final location
+    let content = fs::read_to_string(&closed_path).unwrap();
+    assert!(content.contains("status: closed"));
+
+    // Reopen the ticket - should move back to open directory
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("reopen")
+        .arg(ticket_id)
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Reopened"));
+
+    // Verify file moved back to open directory and no longer in closed
+    assert!(old_open_path.exists());
+    assert!(!closed_path.exists());
+    assert!(!in_progress_path.exists());
+    
+    // Verify content is correct in final location
+    let content = fs::read_to_string(&old_open_path).unwrap();
+    assert!(content.contains("status: open"));
+
+    // Use generic status command to move to blocked
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("status")
+        .arg(ticket_id)
+        .arg("blocked")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("Updated"));
+
+    // Verify file moved to blocked directory
+    let blocked_path = tickets_dir.join("blocked").join(format!("{}.md", ticket_id));
+    
+    assert!(blocked_path.exists());
+    assert!(!old_open_path.exists());
+    
+    // Verify content is correct
+    let content = fs::read_to_string(&blocked_path).unwrap();
+    assert!(content.contains("status: blocked"));
+
+    // Ensure only one file exists across all status directories
+    let final_ticket_files = find_ticket_files(&tickets_dir);
+    assert_eq!(final_ticket_files.len(), 1);
+    assert!(final_ticket_files[0].ends_with(&format!("{}.md", ticket_id)));
+}
+
+#[test] 
+fn test_no_duplicate_files_created_during_status_changes() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Create a ticket
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Test ticket for duplicate prevention")
+        .assert()
+        .success();
+
+    let ticket_files = find_ticket_files(&tickets_dir);
+    let ticket_id = ticket_files[0]
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Perform multiple status changes
+    let statuses = vec!["in_progress", "blocked", "ready", "closed"];
+    
+    for status in &statuses {
+        let mut cmd = Command::cargo_bin("tkr").unwrap();
+        cmd.env("TICKETS_DIR", &tickets_dir)
+            .arg("status")
+            .arg(ticket_id)
+            .arg(status)
+            .assert()
+            .success();
+        
+        // After each status change, ensure exactly one file exists
+        let current_files = find_ticket_files(&tickets_dir);
+        assert_eq!(current_files.len(), 1, 
+            "Found {} files after changing to status {}: {:?}", 
+            current_files.len(), status, current_files);
+        
+        // Verify the file is in the correct status directory
+        let expected_path = tickets_dir.join(status).join(format!("{}.md", ticket_id));
+        assert!(expected_path.exists(), 
+            "File not found in expected location: {:?}", expected_path);
+    }
 }

@@ -153,13 +153,13 @@ impl Commands {
                 manager.create_ticket(title, options)?;
             },
             Commands::Start { id } => {
-                manager.update_status(&id, "in_progress")?;
+                manager.start_ticket(&id)?;
             },
             Commands::Close { id } => {
-                manager.update_status(&id, "closed")?;
+                manager.close_ticket(&id)?;
             },
             Commands::Reopen { id } => {
-                manager.update_status(&id, "open")?;
+                manager.reopen_ticket(&id)?;
             },
             Commands::Status { id, status } => {
                 manager.update_status(&id, &status)?;

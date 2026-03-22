@@ -1,5 +1,35 @@
 # Agent Documentation: tkr CLI Tool
 
+## Quick Start for AI Agents
+
+Get productive immediately with this workflow:
+
+```bash
+# 1. Setup environment and verify
+cd /path/to/tkr
+devbox run just build-internal      # Build in devbox environment
+devbox run just test-internal       # Verify all tests pass
+
+# 2. Check available work
+./target/release/tkr list --status=open
+# OR get next actionable ticket
+./target/release/tkr ready
+
+# 3. Start working on a ticket
+./target/release/tkr start <ticket-id>
+./target/release/tkr add-note <ticket-id> "Starting work on..."
+
+# 4. Make changes, then verify
+devbox run just test-internal       # Run tests before completing
+
+# 5. Complete the ticket
+./target/release/tkr close <ticket-id>
+```
+
+**CRITICAL**: Always add tests for new features and bug fixes! See "Testing Requirements" section below.
+
+**Note**: AI agents typically use `devbox run just x-internal` for automated operations, while human developers may prefer `just x` for convenience.
+
 ## Overview
 
 **tkr** is a modern Rust CLI ticket management system designed for developers who want a lightweight, git-friendly ticket system that integrates seamlessly with their workflow. It's a complete rewrite of the original `tk` bash script in Rust, providing type safety, better performance, and enhanced features.
@@ -28,7 +58,7 @@
 ## Quick Reference
 
 - **Project Type**: Rust CLI application using clap for argument parsing
-- **Build System**: Cargo with devbox for environment management
+- **Build System**: Cargo with devbox for environment management, following ADR-20260131001 Standard Developer UX Flow
 - **Test Framework**: Built-in Rust testing with assert_cmd for CLI tests
 - **Architecture**: Modular design with clear separation of concerns
 - **File Format**: Markdown files with YAML frontmatter for ticket storage
@@ -178,15 +208,14 @@ tkr list --status=open       # See all open tickets and choose one
 tkr start <ticket-id>         # Mark as in_progress
 
 # 3. Do the work
-# - Add tests as needed
+# - Add tests FIRST (TDD approach) - write failing tests that reproduce the issue or feature
 # - Implement the required changes
 # - Follow coding standards and best practices
 # - Update documentation
 
 # 4. Verify the work
-just test                     # Run tests
-just lint                     # Run linting
-just typecheck                # Run type checking
+devbox run just test-internal       # Run ALL tests
+devbox run just test-internal -- -- --skip unimplemented_tests  # Skip known unimplemented features
 # OR manual testing of the feature
 
 # 5. Complete the ticket
@@ -256,7 +285,7 @@ tkr add-note <ticket-id> "Starting implementation of feature X"
 
 ```bash
 # Verify everything works
-just test && just lint        # Quality gates
+devbox run just test-internal       # Quality gates
 
 # Add completion notes
 tkr add-note <ticket-id> "Implementation complete. Tests passing."
@@ -289,22 +318,129 @@ This workflow ensures consistent, high-quality development while maintaining cle
 
 ### Building and Testing
 
+This project follows the **Standard Developer UX Flow** (ADR-20260131001): `direnv → devbox → just (*-internal) → cargo`
+
+**AI Agent and Automated Systems Workflow**:
 ```bash
-# Build with justfile (recommended)
-just build
+# Primary pattern for AI agents: devbox run + just x-internal
+devbox run just build-internal      # Build the project
+devbox run just test-internal       # Run all tests
+devbox run just test-internal test_name  # Run specific test
+devbox run just test-internal -- --nocapture  # Run tests with output
+devbox run just debug-internal      # Build debug version
 
-# Run tests
-just test
-
-# Run specific test with output
-just test-inner test_name -- --nocapture
-
-# Build debug version
-just debug
-
-# Build release version
-just build
+# Skip unimplemented tests
+devbox run just test-internal -- -- --skip test_dep_tree_command --skip test_link_unlink_commands
 ```
+
+**Why AI agents use devbox run + *-internal**:
+- AI agents operate in automated contexts where environment consistency is critical
+- Direct calls to *-internal targets avoid the extra wrapper overhead
+- More efficient for repeated automated operations
+- Clearer intent in automated scripts and CI/CD pipelines
+
+**Human Developer Convenience Workflow**:
+```bash
+# For human developers who want simple commands
+just build                    # → devbox run build → just build-internal → cargo build
+just test                     # → devbox run test → just test-internal → cargo test
+just debug                    # → devbox run debug → just debug-internal → cargo build
+```
+
+**Direct devbox access** (when automation needs different patterns):
+```bash
+# For automated systems when just targets fail
+devbox run cargo build --release
+devbox run cargo test test_name
+
+# Or use internal targets directly in devbox shell
+devbox shell
+just build-internal
+just test-internal
+```
+
+### Testing Requirements and Best Practices
+
+**CRITICAL: Always add tests for new features and bug fixes**
+
+1. **Regression Tests**: Every bug fix must include regression tests to prevent the issue from recurring
+2. **File Movement Tests**: Any changes to status management must verify proper file movement between directories
+3. **Integration Tests**: Use the established CLI testing patterns in `tests/cli_tests.rs`
+4. **Test Coverage**: Ensure both happy path and edge cases are covered
+
+#### Regression Test Examples
+
+The project includes comprehensive regression tests for file movement:
+
+```rust
+#[test]
+fn test_ticket_file_movement_between_status_directories() {
+    // Tests complete file movement workflow
+    // Verifies old files are removed after status changes
+    // Ensures no duplicates across status directories
+}
+
+#[test] 
+fn test_no_duplicate_files_created_during_status_changes() {
+    // Stress tests multiple status changes
+    // Verifies exactly one file exists after each change
+    // Provides detailed error messages for debugging
+}
+```
+
+#### Testing Patterns
+
+**CLI Testing Pattern**:
+```rust
+use assert_cmd::Command;
+use predicates::prelude::*;
+use tempfile::TempDir;
+
+#[test]
+fn test_command_pattern() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    let mut cmd = Command::cargo_bin("tkr").unwrap();  // Note: Use "tkr" not "tk"
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("command")
+        .arg("argument")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("expected output"));
+}
+```
+
+**File Status Testing**:
+```rust
+// After status changes, always verify file location
+let new_status_path = tickets_dir.join("new_status").join(format!("{}.md", ticket_id));
+let old_status_path = tickets_dir.join("old_status").join(format!("{}.md", ticket_id));
+
+assert!(new_status_path.exists());
+assert!(!old_status_path.exists());  // Critical: verify old file removed
+```
+
+### Bug Fixing Discipline
+
+When fixing bugs, follow this systematic approach:
+
+1. **Root Cause Analysis**: Always identify the underlying cause, not just symptoms
+2. **Minimal Fixes**: Use the smallest possible change that fixes the issue
+3. **Add Tests First**: Write failing tests that reproduce the bug
+4. **Fix Implementation**: Implement the minimal fix
+5. **Verify Fix**: Ensure tests pass and no regressions introduced
+6. **Regression Tests**: Add comprehensive tests to prevent recurrence
+
+#### Recent Bug Fix Example
+
+**Issue**: `tkr close` command reported success but didn't move ticket files from `in_progress/` to `closed/` directory
+
+**Root Cause**: `update_status` method only created new files but didn't remove old files
+
+**Solution**: Enhanced `update_status` to remove old files after saving to new location
+
+**Regression Tests**: Added `test_ticket_file_movement_between_status_directories` and `test_no_duplicate_files_created_during_status_changes`
 
 ### Adding New Commands
 
@@ -503,9 +639,17 @@ fs::write(tickets_dir.join("test-123.md"), ticket_content).unwrap();
 
 ### Recent Fixes
 
-- **Dead Code**: Added `#[allow(dead_code)]` to `get_git_user()` and `get_repo_root()` functions
-- **Clippy Lints**: Fixed needless borrows and unnecessary map_or warnings
-- **Code Quality**: Clean, lint-free codebase that passes strict clippy checks
+**File Movement Bug (Fixed)**
+- **Issue**: `tkr close` and other status commands reported success but didn't move ticket files between status directories, causing duplicates
+- **Root Cause**: `update_status` method only created new files but didn't remove old files from previous location
+- **Solution**: Enhanced `update_status` to properly remove old files after saving to new location
+- **Regression Tests**: Added comprehensive tests to prevent recurrence:
+  - `test_ticket_file_movement_between_status_directories`
+  - `test_no_duplicate_files_created_during_status_changes`
+
+**Dead Code**: Added `#[allow(dead_code)]` to `get_git_user()` and `get_repo_root()` functions
+**Clippy Lints**: Fixed needless borrows and unnecessary map_or warnings
+**Code Quality**: Clean, lint-free codebase that passes strict clippy checks
 
 ### Debug Mode
 Set `RUST_LOG=debug` environment variable for detailed logging output.

@@ -826,3 +826,258 @@ fn test_no_duplicate_files_created_during_status_changes() {
             "File not found in expected location: {:?}", expected_path);
     }
 }
+
+#[test]
+fn test_git_aware_file_movement_in_git_repo() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Initialize git repository
+    std::process::Command::new("git")
+        .args(["init"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to initialize git repo");
+
+    std::process::Command::new("git")
+        .args(["config", "user.name", "Test User"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git user");
+
+    std::process::Command::new("git")
+        .args(["config", "user.email", "test@example.com"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git email");
+
+    // Create a ticket
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Test ticket for git-aware movement")
+        .assert()
+        .success();
+
+    let ticket_files = find_ticket_files(&tickets_dir);
+    let ticket_id = ticket_files[0]
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Add the ticket to git
+    std::process::Command::new("git")
+        .args(["add", ".tickets/"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to add tickets to git");
+
+    std::process::Command::new("git")
+        .args(["commit", "-m", "Add test ticket"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to commit ticket");
+
+    // Change ticket status - this should use git mv
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("start")
+        .arg(ticket_id)
+        .assert()
+        .success();
+
+    // Check git status - should show rename
+    let output = std::process::Command::new("git")
+        .args(["status", "--porcelain"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to get git status");
+
+    let git_status = String::from_utf8_lossy(&output.stdout);
+    
+    // Should show a rename (R) or renamed file
+    assert!(git_status.contains("R") || git_status.contains("renamed"), 
+        "Expected git to show rename, got: {}", git_status);
+
+    // Verify file is in correct location
+    let expected_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    assert!(expected_path.exists(), "File not found in in_progress directory");
+
+    // Verify no duplicates exist
+    let all_files = find_ticket_files(&tickets_dir);
+    assert_eq!(all_files.len(), 1, "Found duplicate files: {:?}", all_files);
+}
+
+#[test]
+fn test_file_movement_outside_git_repo() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Create a ticket (NOT in a git repo)
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Test ticket outside git repo")
+        .assert()
+        .success();
+
+    let ticket_files = find_ticket_files(&tickets_dir);
+    let ticket_id = ticket_files[0]
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Change ticket status - should use filesystem operations
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("start")
+        .arg(ticket_id)
+        .assert()
+        .success();
+
+    // Verify file is in correct location
+    let expected_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    assert!(expected_path.exists(), "File not found in in_progress directory");
+
+    // Verify no duplicates exist
+    let all_files = find_ticket_files(&tickets_dir);
+    assert_eq!(all_files.len(), 1, "Found duplicate files: {:?}", all_files);
+
+    // Verify original file was removed
+    let original_path = tickets_dir.join("open").join(format!("{}.md", ticket_id));
+    assert!(!original_path.exists(), "Original file still exists");
+}
+
+#[test]
+fn test_git_aware_movement_with_untracked_file() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Initialize git repository
+    std::process::Command::new("git")
+        .args(["init"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to initialize git repo");
+
+    std::process::Command::new("git")
+        .args(["config", "user.name", "Test User"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git user");
+
+    std::process::Command::new("git")
+        .args(["config", "user.email", "test@example.com"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git email");
+
+    // Create a ticket but DON'T add it to git
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Untracked ticket")
+        .assert()
+        .success();
+
+    let ticket_files = find_ticket_files(&tickets_dir);
+    let ticket_id = ticket_files[0]
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Change ticket status - should use filesystem operations (not git mv)
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("start")
+        .arg(ticket_id)
+        .assert()
+        .success();
+
+    // Verify file is in correct location
+    let expected_path = tickets_dir.join("in_progress").join(format!("{}.md", ticket_id));
+    assert!(expected_path.exists(), "File not found in in_progress directory");
+
+    // Verify no duplicates exist
+    let all_files = find_ticket_files(&tickets_dir);
+    assert_eq!(all_files.len(), 1, "Found duplicate files: {:?}", all_files);
+}
+
+#[test]
+fn test_git_aware_movement_multiple_status_changes() {
+    let temp_dir = TempDir::new().unwrap();
+    let tickets_dir = temp_dir.path().join(".tickets");
+
+    // Initialize git repository
+    std::process::Command::new("git")
+        .args(["init"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to initialize git repo");
+
+    std::process::Command::new("git")
+        .args(["config", "user.name", "Test User"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git user");
+
+    std::process::Command::new("git")
+        .args(["config", "user.email", "test@example.com"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to set git email");
+
+    // Create a ticket
+    let mut cmd = Command::cargo_bin("tkr").unwrap();
+    cmd.env("TICKETS_DIR", &tickets_dir)
+        .arg("create")
+        .arg("Multi-status test ticket")
+        .assert()
+        .success();
+
+    let ticket_files = find_ticket_files(&tickets_dir);
+    let ticket_id = ticket_files[0]
+        .file_stem()
+        .unwrap()
+        .to_str()
+        .unwrap();
+
+    // Add to git and commit
+    std::process::Command::new("git")
+        .args(["add", ".tickets/"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to add tickets to git");
+
+    std::process::Command::new("git")
+        .args(["commit", "-m", "Add test ticket"])
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("Failed to commit ticket");
+
+    // Perform multiple status changes
+    let statuses = vec!["in_progress", "ready", "closed"];
+    
+    for status in &statuses {
+        let mut cmd = Command::cargo_bin("tkr").unwrap();
+        cmd.env("TICKETS_DIR", &tickets_dir)
+            .arg("status")
+            .arg(ticket_id)
+            .arg(status)
+            .assert()
+            .success();
+        
+        // Verify file is in correct location
+        let expected_path = tickets_dir.join(status).join(format!("{}.md", ticket_id));
+        assert!(expected_path.exists(), 
+            "File not found in {} directory: {:?}", status, expected_path);
+        
+        // Verify no duplicates exist
+        let all_files = find_ticket_files(&tickets_dir);
+        assert_eq!(all_files.len(), 1, 
+            "Found duplicate files after {}: {:?}", status, all_files);
+    }
+}

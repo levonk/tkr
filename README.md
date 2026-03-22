@@ -106,11 +106,47 @@ mise exec -- cargo test -- --nocapture
 
 ### Installation
 
+#### Option 1: Devbox Installation (Recommended)
+
+Install tkr directly from the GitHub repository using devbox:
+
+```bash
+# Add tkr to your existing devbox environment
+devbox add github:levonk/tkr
+
+# Or create a new project with tkr
+mkdir my-project && cd my-project
+devbox init
+devbox add github:levonk/tkr
+devbox shell
+
+# Verify installation
+tkr --help
+```
+
+#### Option 2: Cargo Installation
+
 ```bash
 # Install to local bin
 cargo install --path .
 
-# The binary will be named `tk` (matching the original script)
+# The binary will be named `tkr`
+```
+
+#### Option 3: Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/levonk/tkr.git
+cd tkr
+
+# Using devbox for environment management
+devbox run just build-internal
+
+# Or directly with cargo
+cargo build --release
+
+# The binary will be at ./target/release/tkr
 ```
 
 ## Usage

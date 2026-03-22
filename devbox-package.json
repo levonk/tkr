@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "name": "tkr",
+  "version": "0.1.0",
+  "description": "A modern Rust CLI ticket management system",
+  "homepage": "https://github.com/levonk/tkr",
+  "repository": "https://github.com/levonk/tkr",
+  "license": "MIT",
+  "packages": [],
+  "shell": {
+    "init_hook": [
+      "echo '🎫 tkr CLI installed via devbox!'",
+      "echo 'Run tkr --help to get started'"
+    ]
+  },
+  "scripts": {
+    "help": "tkr --help",
+    "version": "tkr --version"
+  }
+}

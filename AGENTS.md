@@ -63,6 +63,43 @@ devbox run just test-internal       # Run tests before completing
 - **Architecture**: Modular design with clear separation of concerns
 - **File Format**: Markdown files with YAML frontmatter for ticket storage
 - **Runtime**: Async with Tokio, supports TUI and Web interfaces
+- **Package Installation**: Available via devbox from GitHub repository
+
+## Devbox Installation
+
+### For Users
+
+Install tkr directly from GitHub using devbox:
+
+```bash
+# Add to existing devbox environment
+devbox add github:levonk/tkr
+
+# Or create new project with tkr
+mkdir my-project && cd my-project
+devbox init
+devbox add github:levonk/tkr
+devbox shell
+
+# Verify installation
+tkr --help
+```
+
+### For Developers
+
+When developing tkr, use the standard workflow:
+
+```bash
+# Clone and setup
+git clone https://github.com/levonk/tkr.git
+cd tkr
+just bootstrap
+
+# Development workflow
+just build-internal
+just test-internal
+./target/release/tkr --help
+```
 
 ## Repository Structure
 

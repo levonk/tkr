@@ -154,8 +154,28 @@
       }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2026-02-08T07:51:33Z",
-      "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?lastModified=1770537093&narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D"
+      "last_modified": "2026-06-27T07:37:20Z",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d?lastModified=1782545840"
+    },
+    "github:levonk/levonk-packages#bundle-rtk-cloud": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#bundle-rtk-cloud"
+    },
+    "github:levonk/levonk-packages#bundle-rtk-core": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#bundle-rtk-core"
+    },
+    "github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#devbox-rtk-nodejs-pnpm-force"
+    },
+    "github:levonk/levonk-packages#devbox-rtk-python-uv-force": {
+      "last_modified": "2026-06-28T11:41:53Z",
+      "resolved": "github:levonk/levonk-packages/9d3df66f8a3a5a0303a30392f20aca6180992597?lastModified=1782646913#devbox-rtk-python-uv-force"
+    },
+    "github:levonk/smartfo": {
+      "last_modified": "2026-06-28T08:04:42Z",
+      "resolved": "github:levonk/smartfo/19d12350c0d2a64bf776b67b2a9362129a7042fd?lastModified=1782633882"
     },
     "glab": {
       "resolved": "github:NixOS/nixpkgs/fef9403a3e4d31b0a23f0bacebbec52c248fbb51?narHash=sha256-pF1quXG5wsgtyuPOHcLfYg%2Fft%2FQMr8NnX0i6tW2187s%3D#glab",

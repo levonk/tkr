@@ -1,22 +1,27 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
-  "packages": [
-    "act",
-    "ast-grep",
-    "cargo",
-    "clippy",
-    "devbox",
-    "direnv",
-    "git",
-    "gh",
-    "glab",
-    "just",
-    "rust-analyzer",
-    "rustc",
-    "rustfmt",
-    "sd",
-    "yq-go"
-  ],
+  "packages": {
+    "act": "",
+    "ast-grep": "",
+    "cargo": "",
+    "clippy": "",
+    "devbox": "",
+    "direnv": "",
+    "git": "",
+    "gh": "",
+    "glab": "",
+    "just": "",
+    "rust-analyzer": "",
+    "rustc": "",
+    "rustfmt": "",
+    "sd": "",
+    "github:levonk/levonk-packages#devbox-rtk-nodejs-pnpm-force": "",
+    "github:levonk/levonk-packages#devbox-rtk-python-uv-force": "",
+    "github:levonk/levonk-packages#bundle-rtk-core": "",
+    "github:levonk/levonk-packages#bundle-rtk-cloud": "",
+    "github:levonk/smartfo": "",
+    "yq-go": ""
+  },
   "shell": {
     "init_hook": [
       "just bootstrap-internal"
@@ -36,4 +41,3 @@
     "release": "just release-internal"
   }
 }
-
